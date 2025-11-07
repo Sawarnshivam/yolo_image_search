@@ -1,145 +1,127 @@
-# 🔍 YOLO Image Search Engine  
-*A Computer Vision powered visual search application using YOLOv11 + Streamlit*
+# YOLOv11 Search Application 🔍
+
+> A Computer Vision powered image search system built using **YOLOv11** for object detection and **Streamlit** for the web user interface.
+
+This application allows users to process large collections of images, extract object metadata automatically, and perform advanced searches based on object classes and specific count thresholds.
 
 ---
 
-## 🚀 Overview
+## 🔥 Key Features
 
-This project allows users to **search images based on objects detected using YOLOv11**.
-
-Instead of detecting objects every time, the application:
-
-1. Runs inference once over a folder of images
-2. Saves the structured metadata (class → count → confidence → bounding boxes)
-3. Allows fast search and filtering based on:
-   - Object classes (Person, Apple, Car, …)
-   - Object count thresholds
-   - Logical search mode (OR / AND)
-
-> Example: **Find images that have (person AND bicycle)**  
-> Example: **Show images that contain (apple OR banana), with ≤ 3 apples**
+* **Automated Inference:** Run object detection using YOLOv11 on entire folders of images.
+* **Structured Metadata:** Automatically saves detection results (classes, bounding boxes, confidence scores) as JSON.
+* **Efficient Loading:** Load previously processed metadata instantly without re-running computationally expensive inference.
+* **Advanced Search Capabilities:**
+    * Filter by specific **classes** (objects).
+    * Set **object count thresholds** (e.g., "exactly 1 banana", "less than 3 spoons").
+    * Toggle match modes: **ANY** (OR) vs **ALL** (AND).
+* **Visual Results:** Responsive image grid display with bounding boxes.
+    * *Matching objects* highlighted in green.
+    * *Non-matching objects* shown faded (optional).
+* **Data Export:** Export filtered search results as `search_results.json` for further analysis.
 
 ---
 
-## ✨ Features
+## 🌍 Real-World Use Cases
 
-| Feature | Description |
-|--------|-------------|
-| 🔎 Search Engine | Query images based on object detections |
-| 🧠 Metadata Indexing | Stores detections as JSON → fast searching |
-| ⚙️ YOLOv11 Powered | Supports any YOLO model (custom weights included) |
-| 🖼️ Grid Display | Dynamically displays matching images |
-| ✅ Bounding Boxes Toggle | Annotated vs. original images view |
-| 📦 Export | Download search results as JSON |
-| 💡 Streamlit UI | Simple and interactive front-end |
+This system is highly useful wherever image datasets are large and manual searching is time-consuming or impossible.
+
+| Domain | Application |
+| :--- | :--- |
+| **Surveillance / Security** | Search CCTV footage for specific persons, vehicles, or suspicious items during investigations. |
+| **Retail Analytics** | Analyze product shelf states or crowd presence using store camera data. |
+| **Traffic Monitoring** | Detect and count cars, bikes, and pedestrians for smart city analysis. |
+| **Wildlife Monitoring** | Identify and track specific animal species from forest camera trap images. |
+| **Medical Imaging** | Organize and filter medical scans based on detected features (cells, abnormalities). |
+| **Digital Asset Management** | Quickly find personal or event photos containing specific people, pets, or objects. |
+| **Forensics** | Filter crime scene image collections for specific objects (e.g., weapons, evidence type). |
 
 ---
 
-## 🧠 How It Works (Architecture)
+## 📦 Tech Stack
 
-User Input → Run YOLO Inference → Generate Metadata → Search & Filter → Display Results
+| Component | Technology |
+| :--- | :--- |
+| **Object Detection** | [YOLOv11](https://docs.ultralytics.com/) (PyTorch) |
+| **Frontend UI** | [Streamlit](https://streamlit.io/) |
+| **Image Processing** | Pillow (PIL) |
+| **Data Storage** | JSON (Structured Metadata) |
 
+---
 
-Metadata stored per image:
+## 🚀 Installation & Running
 
-```json
-{
-  "image_path": "...",
-  "detections": [
-    {"class": "person", "confidence": 0.91, "bbox": [x1, y1, x2, y2], "count": 3}
-  ],
-  "class_counts": {"person": 3, "car": 1}
-}
+### Prerequisites
+Ensure you have Python 3.8+ installed.
 
-🗂️ Project Structure
-yolo_image_search/
-│── app.py                # Streamlit UI
-│── requirements.txt      # Python dependencies
-│── instruction.txt       # (optional) setup notes
-│
-├── src/
-│   ├── inference.py      # YOLO model inference
-│   ├── utils.py          # Metadata save/load helpers
-│   └── config.py         # Load YAML config
-│
-├── configs/
-│   └── default.yaml      # Configurations (extensions, confidence threshold)
-│
-└── ui-flow-*.png         # UI flow diagrams
-
-🔧 Installation & Setup
-✅ 1. Clone the repository
-git clone https://github.com/Sawarnshivam/yolo_image_search.git
-cd yolo_image_search
-
-✅ 2. Create virtual environment (optional, recommended)
-python -m venv venv
-.\venv\Scripts\activate
-
-✅ 3. Install dependencies
+### 1. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
+### 2. Launch the Application
+```bash
 
-✅ 4. Run the application
 streamlit run app.py
+```
+### 3. Initial Setup
+Once the web interface loads:
 
-📌 Usage Guide
-Option 1 — Process new images
+Upload or specify the path to your image folder.
 
-Specify image directory path
+Select your desired YOLOv11 model weights (e.g., yolo11n.pt, yolo11x.pt).
 
-Specify YOLO weight file (e.g., yolo11m.pt)
+📖 Usage Workflow
+### 1. Processing Images
+- Choose your dataset folder and run YOLO inference.
 
-App detects objects & saves metadata automatically
+- The app will generate and save metadata in processed/<dataset>/metadata.json.
 
-Option 2 — Load existing metadata
+- Note: On subsequent visits, you can just load this metadata directly without waiting for inference.
 
-Load .json metadata file generated earlier
+### 2. Searching
+Use the sidebar to configure your search filters:
 
-Fast search without detection overhead
+- Select Classes: Choose which objects to look for (e.g., 'person', 'car').
 
-Search Controls
+- Set Count Filters: Define rules like "Person count ≥ 1" AND "Car count = 0".
 
-Select classes to search
-
-Choose search mode:
-✅ OR mode → match ANY class
-✅ AND mode → match ALL selected classes
-
-Filter using count thresholds (≤ X objects)
-
-⚠️ File Size Notice
-
-Large assets are NOT included in the repository:
-
-yolo11m.pt (YOLO model weights)
-
-/data/ folder (raw images, processed metadata)
-
-Add your model weights manually to project root.
-
-🛠️ Tech Stack
-Component	Technology
-Model	Ultralytics YOLOv11
-UI	Streamlit
-Language	Python
-Visualization	PIL / ImageDraw
-Metadata format	JSON
-🔥 UI Flow (screenshots)
-UI Flow Diagrams
-<img width="3840" height="2160" alt="ui-flow-1" src="https://github.com/user-attachments/assets/2dc95442-3131-4585-b9ec-edd6064669c8" />
-<img width="3840" height="2160" alt="ui-flow-2" src="https://github.com/user-attachments/assets/fb749fb7-239d-4184-88e1-97bf8b7512cc" />
-<img width="3840" height="2160" alt="ui-flow-3" src="https://github.com/user-attachments/assets/fb1241de-407d-4227-aa43-6e9f41674cce" />
+- Choose Search Mode:
+  --
+| Mode | Meaning |
+| :--- | :--- |
+| ANY (OR) | Image is shown if it contains at least one of the selected classes. |
+| ALL (AND) | Image is shown only if it contains all selected classes simultaneously. |
 
 
+### 3. Viewing & Exporting
+- Browse the responsive grid of matching images.
 
+- View precise bounding boxes on detected objects.
 
+- Click the Export button to download your current filtered view as a JSON file.
 
-⭐ Future Enhancements (idea list)
+## 📂 Metadata Structure
+The application saves detection data in a structured JSON format for quick retrieval:
+```json
 
-ZIP export of annotated results
-
-Search by text prompt (Multimodal RAG Extension)
-
-Add vector DB (FAISS) for similarity search
-
-If this project helped you, consider giving it a ⭐ on GitHub 🙌
+{
+  "image_path": "images/vacation/img_001.jpg",
+  "detections": [
+    {
+      "class": "banana",
+      "confidence": 0.85,
+      "bbox": [100, 150, 200, 300],
+      "count": 1
+    },
+    {
+      "class": "bowl",
+      "confidence": 0.92,
+      "bbox": [50, 200, 350, 400],
+      "count": 1
+    }
+  ],
+  "class_counts": {
+      "banana": 1,
+      "bowl": 1
+  }
+}
