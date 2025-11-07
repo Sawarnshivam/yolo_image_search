@@ -1,0 +1,21 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+.env/
+
+# Streamlit cache
+.streamlit/
+
+# Data folders (raw images, processed metadata)
+data/
+
+# Model weights & large files
+*.pt
+*.pth
+*.zip
+
+# VS Code settings
+.vscode/
